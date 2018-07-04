@@ -630,7 +630,6 @@ static av_cold int opus_decode_init(AVCodecContext *avctx)
     int ret, i, j;
 
     avctx->sample_fmt  = AV_SAMPLE_FMT_FLTP;
-    avctx->sample_rate = 48000;
 
     c->fdsp = avpriv_float_dsp_alloc(0);
     if (!c->fdsp)

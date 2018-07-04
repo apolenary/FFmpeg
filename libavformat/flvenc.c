@@ -59,7 +59,7 @@ static const AVCodecTag flv_audio_codec_ids[] = {
     { AV_CODEC_ID_NELLYMOSER, FLV_CODECID_NELLYMOSER >> FLV_AUDIO_CODECID_OFFSET },
     { AV_CODEC_ID_PCM_MULAW,  FLV_CODECID_PCM_MULAW  >> FLV_AUDIO_CODECID_OFFSET },
     { AV_CODEC_ID_PCM_ALAW,   FLV_CODECID_PCM_ALAW   >> FLV_AUDIO_CODECID_OFFSET },
-    { AV_CODEC_ID_SPEEX,      FLV_CODECID_SPEEX      >> FLV_AUDIO_CODECID_OFFSET },
+    { AV_CODEC_ID_OPUS,       FLV_CODECID_SPEEX      >> FLV_AUDIO_CODECID_OFFSET },
     { AV_CODEC_ID_NONE,       0 }
 };
 
@@ -132,17 +132,26 @@ static int get_audio_flags(AVFormatContext *s, AVCodecParameters *par)
     if (par->codec_id == AV_CODEC_ID_AAC) // specs force these parameters
         return FLV_CODECID_AAC | FLV_SAMPLERATE_44100HZ |
                FLV_SAMPLESSIZE_16BIT | FLV_STEREO;
-    else if (par->codec_id == AV_CODEC_ID_SPEEX) {
-        if (par->sample_rate != 16000) {
+    else if (par->codec_id == AV_CODEC_ID_OPUS) {
+        int opus_sr = 0;
+        switch (par->sample_rate) {
+        case 48000:
+        case 44100:
+            opus_sr = FLV_SAMPLERATE_44100HZ;
+            break;
+        case 22050:
+            opus_sr = FLV_SAMPLERATE_22050HZ;
+            break;
+        case 11025:
+            opus_sr = FLV_SAMPLERATE_11025HZ;
+            break;
+        default:
             av_log(s, AV_LOG_ERROR,
-                   "FLV only supports wideband (16kHz) Speex audio\n");
+                   "FLV does not support sample rate %d, "
+                   "choose from (44100, 22050, 11025)\n", par->sample_rate);
             return AVERROR(EINVAL);
         }
-        if (par->channels != 1) {
-            av_log(s, AV_LOG_ERROR, "FLV only supports mono Speex audio\n");
-            return AVERROR(EINVAL);
-        }
-        return FLV_CODECID_SPEEX | FLV_SAMPLERATE_11025HZ | FLV_SAMPLESSIZE_16BIT;
+        return FLV_CODECID_SPEEX | opus_sr | FLV_SAMPLESSIZE_16BIT | FLV_STEREO;
     } else {
         switch (par->sample_rate) {
         case 48000:

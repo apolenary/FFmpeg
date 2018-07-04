@@ -730,7 +730,7 @@ AVCodec ff_opus_encoder = {
     .close          = opus_encode_end,
     .caps_internal  = FF_CODEC_CAP_INIT_THREADSAFE | FF_CODEC_CAP_INIT_CLEANUP,
     .capabilities   = AV_CODEC_CAP_EXPERIMENTAL | AV_CODEC_CAP_SMALL_LAST_FRAME | AV_CODEC_CAP_DELAY,
-    .supported_samplerates = (const int []){ 48000, 0 },
+    .supported_samplerates = (const int []){ 48000, 44100, 22050, 11025, 0 },
     .channel_layouts = (const uint64_t []){ AV_CH_LAYOUT_MONO,
                                             AV_CH_LAYOUT_STEREO, 0 },
     .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_FLTP,
