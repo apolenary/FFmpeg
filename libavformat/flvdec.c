@@ -193,6 +193,8 @@ static int flv_same_audio_codec(AVCodecParameters *apar, int flags)
     case FLV_CODECID_ADPCM:
         return apar->codec_id == AV_CODEC_ID_ADPCM_SWF;
     case FLV_CODECID_SPEEX:
+        return apar->codec_id == AV_CODEC_ID_SPEEX;
+    case FLV_CODECID_OPUS:
         return apar->codec_id == AV_CODEC_ID_OPUS;
     case FLV_CODECID_MP3:
         return apar->codec_id == AV_CODEC_ID_MP3;
@@ -237,6 +239,10 @@ static void flv_set_audio_codec(AVFormatContext *s, AVStream *astream,
         apar->codec_id = AV_CODEC_ID_ADPCM_SWF;
         break;
     case FLV_CODECID_SPEEX:
+        apar->codec_id    = AV_CODEC_ID_SPEEX;
+        apar->sample_rate = 16000;
+        break;
+    case FLV_CODECID_OPUS:
         apar->codec_id    = AV_CODEC_ID_OPUS;
         break;
     case FLV_CODECID_MP3:
